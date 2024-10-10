@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .dashboard {
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+            position: relative;
+            z-index: 1;
+            animation: slideIn 0.5s ease-out; /* Slide-in effect */
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            animation: bounceIn 1s; /* Bounce effect */
+            color: #ffcc00;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            letter-spacing: 2px;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: translateY(-30px); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(0); }
+        }
+
+        .game-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .game {
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            font-size: 2rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+            width: 200px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            animation: bounce 1s infinite alternate; /* Bounce effect */
+        }
+
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-10px); }
+        }
+
+        .game:nth-child(1) { background-color: #4CAF50; }
+        .game:nth-child(2) { background-color: #2196F3; }
+        .game:nth-child(3) { background-color: #FF5722; }
+
+        .game:hover {
+            transform: scale(1.1);
+            filter: brightness(1.2);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Confetti */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ffcc00;
+            opacity: 0;
+            transition: opacity 0.5s;
+            border-radius: 50%;
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 600px) {
+            .game {
+                width: 150px;
+                height: 80px;
+                font-size: 1.5rem;
+            }
+            h1 { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg" id="bg1" style="background-image: url('https://i.pinimg.com/originals/c7/32/c5/c732c51b0b1ab8c03bf52bd19ab1635f.jpg');"></div>
+    <div class="bg" id="bg2" style="background-image: url('https://cdn5.vectorstock.com/i/1000x1000/00/69/children-playing-at-playground-vector-22380069.jpg');"></div>
+    <div class="bg" id="bg3" style="background-image: url('https://t4.ftcdn.net/jpg/02/33/66/97/360_F_233669731_fS4mRkh7rY4gicZzCZ2PXjafLusphkeD.jpg');"></div>
+    <div class="bg" id="bg4" style="background-image: url('https://static.vecteezy.com/system/resources/previews/012/724/149/large_2x/children-at-playground-scene-free-vector.jpg');"></div>
+    <div class="bg" id="bg5" style="background-image: url('http://clipart-library.com/newhp/21-217145_schoolyard-playground-child-clip-art-school-playground-clip.png');"></div>
+
+    <div class="dashboard">
+        <h1>Choose Your Game!</h1>
+        <div class="game-container">
+            <div class="game" onclick="selectGame('http://54.81.162.234:1001/')">🧩 Find Pairs</div>
+            <div class="game" onclick="selectGame('http://54.81.162.234:1000/')">🎨 Colour Sequence</div>
+            <div class="game" onclick="selectGame('http://54.81.162.234:1002/')">❌ Tic Tac Toe</div>
+        </div>
+    </div>
+
+    <script>
+        const backgrounds = document.querySelectorAll('.bg');
+        let currentIndex = 0;
+
+        function changeBackground() {
+            backgrounds[currentIndex].style.opacity = '0'; // Fade out current background
+            currentIndex = (currentIndex + 1) % backgrounds.length; // Move to next background
+            backgrounds[currentIndex].style.opacity = '1'; // Fade in next background
+        }
+
+        // Initial setup
+        backgrounds[currentIndex].style.opacity = '1'; // Show first background
+
+        // Change background every 3 seconds
+        setInterval(changeBackground, 3000);
+
+        function selectGame(url) {
+            // Optional: Add a pulsating effect on selection
+            const gameElements = document.querySelectorAll('.game');
+            gameElements.forEach(game => {
+                game.style.animation = 'pulse 0.5s';
+                setTimeout(() => {
+                    game.style.animation = '';
+                }, 500);
+            });
+
+            // Confetti effect
+            createConfetti();
+            window.location.href = url;
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.top = `${Math.random() * 100}vh`;
+                confetti.style.opacity = '1';
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                document.body.appendChild(confetti);
+                setTimeout(() => {
+                    confetti.style.opacity = '0';
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 500);
+                }, 100);
+            }
+        }
+    </script>
+</body>
+</html>
