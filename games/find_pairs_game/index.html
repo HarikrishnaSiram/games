@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #ffcc00, #ff6699, #66ccff, #ffcc00);
+            background-size: 400% 400%;
+            animation: gradient 10s ease infinite;
+            font-family: 'Arial', sans-serif;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            gap: 10px;
+            margin: 20px 0; /* Added margin for spacing */
+        }
+
+        .card {
+            width: 100px;
+            height: 100px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: transform 0.3s, background-color 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .card.flipped {
+            background-color: #fff;
+            color: #333;
+            border: 2px solid #4CAF50;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .status, .timer, .score {
+            margin-bottom: 20px;
+            font-size: 20px;
+            color: #333;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px; /* Space between buttons */
+        }
+
+        #restartButton, #howToPlayButton {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        #restartButton {
+            background-color: #dc3545; /* Dark Red */
+        }
+
+        #howToPlayButton {
+            background-color: #007bff; /* Dark Blue */
+        }
+
+        #restartButton:hover {
+            background-color: #c82333;
+            transform: scale(1.05); /* Slightly enlarge on hover */
+        }
+
+        #howToPlayButton:hover {
+            background-color: #0069d9;
+            transform: scale(1.05); /* Slightly enlarge on hover */
+        }
+
+        select {
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #4CAF50;
+            background-color: #fff;
+            color: #333;
+            cursor: pointer;
+            appearance: none; /* Remove default arrow */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="green"><path d="M8 12l-4-4h8z"/></svg>'); /* Custom arrow */
+            background-repeat: no-repeat;
+            background-position: right 10px center; /* Position the arrow */
+            background-size: 12px; /* Size of the arrow */
+        }
+
+        select:hover {
+            border-color: #45a049;
+        }
+
+        @keyframes blast {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .blast {
+            animation: blast 0.5s ease forwards;
+            background-color: #FFD700; /* Gold color during celebration */
+        }
+
+        /* Instructions Modal */
+        #instructions {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        #instructions h2 {
+            margin-top: 0;
+        }
+
+        #closeInstructions {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #closeInstructions:hover {
+            background-color: #45a049;
+        }
+
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <div class="status">Find the pairs!</div>
+    <div class="timer">Time: <span id="timer">0</span> seconds</div>
+    <div class="score">Score: <span id="score">0</span></div>
+    <select id="categorySelect">
+        <option value="fruits">Fruits</option>
+        <option value="animals">Animals</option>
+        <option value="numbers">Numbers</option>
+    </select>
+    
+    <div class="board" id="board"></div>
+
+    <!-- Buttons below the board -->
+    <div class="button-container">
+        <button id="restartButton">Restart</button>
+        <button id="howToPlayButton">How to Play</button>
+    </div>
+
+    <!-- Instructions Modal -->
+    <div class="overlay" id="overlay"></div>
+    <div id="instructions">
+        <h2>How to Play</h2>
+        <p>1. Select a category (Fruits, Animals, or Numbers).</p>
+        <p>2. Click "Restart" to shuffle the cards.</p>
+        <p>3. Click on a card to flip it and reveal its value.</p>
+        <p>4. Find the matching pairs by clicking two cards. If they match, they stay revealed.</p>
+        <p>5. If they don't match, they will flip back after a short delay.</p>
+        <p>6. The game ends when all pairs are found. Try to beat your score!</p>
+        <button id="closeInstructions">Close</button>
+    </div>
+
+    <script>
+        const boardElement = document.getElementById('board');
+        const statusElement = document.querySelector('.status');
+        const restartButton = document.getElementById('restartButton');
+        const timerElement = document.getElementById('timer');
+        const scoreElement = document.getElementById('score');
+        const categorySelect = document.getElementById('categorySelect');
+        const howToPlayButton = document.getElementById('howToPlayButton');
+        const overlay = document.getElementById('overlay');
+        const instructions = document.getElementById('instructions');
+        const closeInstructions = document.getElementById('closeInstructions');
+
+        const categories = {
+            fruits: ['🍎', '🍌', '🍇', '🍉', '🍊', '🍓', '🍈', '🍒'],
+            animals: ['🐶', '🐱', '🐰', '🦊', '🐸', '🐵', '🐷', '🦁'],
+            numbers: ['1', '2', '3', '4', '5', '6', '7', '8'] // Numbers as icons
+        };
+
+        let selectedCategory = categories[categorySelect.value];
+        let cards = [];
+        let firstCard = null;
+        let secondCard = null;
+        let lockBoard = false;
+        let matchedPairs = 0;
+        let score = 0;
+        let timer = 0;
+        let timerInterval;
+
+        function generateCards() {
+            cards = [...selectedCategory, ...selectedCategory]; // Duplicate for pairs
+            shuffle(cards);
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function createBoard() {
+            generateCards();
+            boardElement.innerHTML = '';
+            cards.forEach((card) => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('card');
+                cardElement.dataset.value = card;
+                cardElement.addEventListener('click', flipCard);
+                boardElement.appendChild(cardElement);
+            });
+            resetGame();
+        }
+
+        function resetGame() {
+            matchedPairs = 0;
+            score = 0;
+            clearInterval(timerInterval);
+            timer = 0;
+            timerElement.textContent = timer;
+            scoreElement.textContent = score;
+            statusElement.textContent = 'Find the pairs!';
+            firstCard = null;
+            secondCard = null;
+            lockBoard = false;
+            timerInterval = setInterval(() => {
+                timer++;
+                timerElement.textContent = timer;
+            }, 1000);
+        }
+
+        function flipCard() {
+            if (lockBoard || this.classList.contains('flipped')) return;
+            this.classList.add('flipped');
+            this.textContent = this.dataset.value;
+
+            if (!firstCard) {
+                firstCard = this;
+            } else {
+                secondCard = this;
+                lockBoard = true;
+                checkForMatch();
+            }
+        }
+
+        function checkForMatch() {
+            if (firstCard.dataset.value === secondCard.dataset.value) {
+                matchedPairs++;
+                score += 10; // Increment score for each match
+                scoreElement.textContent = score;
+                resetCards();
+                if (matchedPairs === selectedCategory.length) {
+                    clearInterval(timerInterval);
+                    blastEffect();
+                    statusElement.textContent = `Congratulations! You found all pairs in ${timer} seconds!`;
+                }
+            } else {
+                setTimeout(() => {
+                    firstCard.classList.remove('flipped');
+                    secondCard.classList.remove('flipped');
+                    firstCard.textContent = '';
+                    secondCard.textContent = '';
+                    resetCards();
+                }, 1000);
+            }
+        }
+
+        function blastEffect() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.classList.add('blast');
+            });
+            setTimeout(() => {
+                cards.forEach(card => {
+                    card.classList.remove('blast');
+                });
+            }, 2000); // Blast effect lasts for 2 seconds
+        }
+
+        function resetCards() {
+            firstCard = null;
+            secondCard = null;
+            lockBoard = false;
+        }
+
+        restartButton.addEventListener('click', createBoard);
+        categorySelect.addEventListener('change', (event) => {
+            selectedCategory = categories[event.target.value];
+            createBoard();
+        });
+
+        howToPlayButton.addEventListener('click', () => {
+            overlay.style.display = 'block';
+            instructions.style.display = 'block';
+        });
+
+        closeInstructions.addEventListener('click', () => {
+            overlay.style.display = 'none';
+            instructions.style.display = 'none';
+        });
+
+        overlay.addEventListener('click', () => {
+            overlay.style.display = 'none';
+            instructions.style.display = 'none';
+        });
+
+        createBoard();
+    </script>
+</body>
+</html>
