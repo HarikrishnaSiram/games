@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colorful Sequence Memory Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #ffcccc, #cce5ff);
+            position: relative;
+            height: 100vh;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.8;
+            animation: float 5s linear infinite;
+            border-radius: 10%;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0); }
+            50% { transform: translateY(-20px) rotate(360deg); }
+            100% { transform: translateY(0) rotate(0); }
+        }
+
+        .sphere { width: 50px; height: 50px; background: #ff6b6b; border-radius: 50%; box-shadow: 0 0 30px rgba(255, 107, 107, 0.7); }
+        .cone { width: 0; height: 0; border-left: 25px solid transparent; border-right: 25px solid transparent; border-bottom: 50px solid #ffcc00; position: relative; margin-top: -25px; box-shadow: 0 0 20px rgba(255, 204, 0, 0.5); }
+        .cylinder { width: 40px; height: 100px; background: #00c6ff; border-radius: 20px; box-shadow: 0 0 30px rgba(0, 198, 255, 0.7); }
+        .cube { width: 50px; height: 50px; background: #ffeb3b; position: relative; transform-style: preserve-3d; }
+        .cuboid { width: 50px; height: 100px; background: #3b3bff; }
+        .pyramid { width: 0; height: 0; border-left: 25px solid transparent; border-right: 25px solid transparent; border-bottom: 50px solid #ff5733; position: relative; margin-top: -25px; }
+
+        h1, #level, #highScore { color: #333; position: relative; z-index: 1; text-align: center; margin-top: 20px; }
+        .controls { position: relative; z-index: 1; text-align: center; margin-top: 20px; }
+        .color-button { width: 100px; height: 100px; border: none; border-radius: 50%; margin: 20px; cursor: pointer; position: relative; z-index: 1; transition: transform 0.2s, box-shadow 0.2s; }
+        #red { background: #ff3b3b; }
+        #green { background: #3bff3b; }
+        #blue { background: #3b3bff; }
+        #yellow { background: #ffeb3b; }
+        .color-button.highlight { transform: scale(1.2); box-shadow: 0 0 20px rgba(255, 255, 255, 0.8); }
+
+        #startGame, #resetGame, #showInstructions { width: 120px; height: 40px; border: none; border-radius: 5px; cursor: pointer; margin: 10px; font-size: 16px; font-weight: bold; color: white; position: relative; z-index: 1; }
+        #startGame { background: #ff0000; }
+        #resetGame { background: #0d00ff; }
+        #showInstructions { background: #29ff03; }
+
+        #message, #score { margin-top: 20px; font-size: 18px; color: #555; text-align: center; position: relative; z-index: 1; }
+
+        /* Instructions */
+        #instructions {
+            display: none;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        #closeInstructions {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: #28a745; /* Green color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #closeInstructions:hover {
+            background-color: #218838; /* Darker green on hover */
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.7);
+            opacity: 0.6;
+            animation: floatBubble 6s linear infinite;
+        }
+
+        @keyframes floatBubble {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-100vh); }
+        }
+    </style>
+</head>
+<body>
+    <h1>Colorful Sequence Memory Game</h1>
+    <div id="level">Level: 0</div>
+    <div id="highScore">High Score: 0</div>
+    
+    <div class="controls">
+        <button id="startGame">Start Game</button>
+        <button id="resetGame">Reset Game</button>
+        <button id="showInstructions">How to Play</button>
+    </div>
+
+    <div id="colorButtons" class="controls">
+        <button class="color-button" id="red"></button>
+        <button class="color-button" id="green"></button>
+        <button class="color-button" id="blue"></button>
+        <button class="color-button" id="yellow"></button>
+    </div>
+
+    <div id="message"></div>
+    <div id="score">Score: 0</div>
+
+    <div id="instructions">
+        <h2>How to Play</h2>
+        <p>1. Click "Start Game" to begin.</p>
+        <p>2. Observe the color sequence that will be displayed.</p>
+        <p>3. Click the color buttons in the same order to replicate the sequence.</p>
+        <p>4. If you make a mistake, the game will end.</p>
+        <p>5. Try to reach the highest score by advancing through levels!</p>
+        <button id="closeInstructions">Close</button> <!-- Updated button -->
+    </div>
+
+    <script>
+        const colors = ['red', 'green', 'blue', 'yellow'];
+        let sequence = [];
+        let playerInput = [];
+        let level = 0;
+        let score = 0;
+        let highScore = 0;
+
+        function startGame() {
+            sequence = [];
+            playerInput = [];
+            level = 0;
+            score = 0;
+            document.getElementById('message').textContent = '';
+            document.getElementById('score').textContent = 'Score: 0';
+            document.getElementById('level').textContent = 'Level: 0';
+            nextSequence();
+            document.getElementById('instructions').style.display = 'none'; // Hide instructions when starting the game
+        }
+
+        function nextSequence() {
+            playerInput = [];
+            level++;
+            document.getElementById('level').textContent = 'Level: ' + level;
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            sequence.push(randomColor);
+            showSequence();
+        }
+
+        function showSequence() {
+            let i = 0;
+            const interval = setInterval(() => {
+                highlightColor(sequence[i]);
+                i++;
+                if (i >= sequence.length) {
+                    clearInterval(interval);
+                    document.getElementById('message').textContent = 'Your turn!';
+                }
+            }, 1000);
+        }
+
+        function highlightColor(color) {
+            const button = document.getElementById(color);
+            button.classList.add('highlight');
+            setTimeout(() => {
+                button.classList.remove('highlight');
+            }, 500);
+        }
+
+        document.querySelectorAll('.color-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const color = this.id;
+                playerInput.push(color);
+                checkInput(playerInput.length - 1);
+            });
+        });
+
+        function checkInput(currentIndex) {
+            if (playerInput[currentIndex] !== sequence[currentIndex]) {
+                document.getElementById('message').textContent = 'Wrong! Game Over. Click Start to try again.';
+                return;
+            }
+
+            if (playerInput.length === sequence.length) {
+                document.getElementById('message').textContent = 'Good job! Next sequence...';
+                score += 10;
+                document.getElementById('score').textContent = 'Score: ' + score;
+                if (score > highScore) {
+                    highScore = score;
+                    document.getElementById('highScore').textContent = 'High Score: ' + highScore;
+                }
+                setTimeout(nextSequence, 1000);
+            }
+        }
+
+        document.getElementById('startGame').addEventListener('click', startGame);
+        document.getElementById('resetGame').addEventListener('click', startGame);
+
+        document.getElementById('showInstructions').addEventListener('click', () => {
+            document.getElementById('instructions').style.display = 'block';
+        });
+
+        document.getElementById('closeInstructions').addEventListener('click', () => {
+            document.getElementById('instructions').style.display = 'none';
+        });
+
+        // Function to create floating 3D shapes
+        function createShape() {
+            const shapes = ['sphere', 'cone', 'cylinder', 'cube', 'cuboid', 'pyramid'];
+            const shapeType = shapes[Math.floor(Math.random() * shapes.length)];
+            const shape = document.createElement('div');
+            shape.classList.add('shape', shapeType);
+
+            // Set random position
+            shape.style.left = Math.random() * 100 + 'vw';
+            shape.style.top = Math.random() * 100 + 'vh';
+
+            // Set random animation duration
+            shape.style.animationDuration = Math.random() * 3 + 3 + 's';
+
+            // Append shape to body
+            document.body.appendChild(shape);
+
+            // Remove shape after some time
+            setTimeout(() => {
+                shape.remove();
+            }, 5000);
+        }
+
+        // Create shapes every second
+        setInterval(createShape, 1000);
+
+        // Function to create floating bubbles
+        function createBubble() {
+            const bubble = document.createElement('div');
+            bubble.classList.add('bubble');
+            const size = Math.random() * 20 + 10; // Bubble size between 10px and 30px
+            bubble.style.width = size + 'px';
+            bubble.style.height = size + 'px';
+            
+            // Set random position
+            bubble.style.left = Math.random() * 100 + 'vw';
+            bubble.style.bottom = 0; // Start from the bottom
+            
+            // Set random animation duration
+            bubble.style.animationDuration = Math.random() * 3 + 3 + 's';
+
+            // Append bubble to body
+            document.body.appendChild(bubble);
+
+            // Remove bubble after some time
+            setTimeout(() => {
+                bubble.remove();
+            }, 6000);
+        }
+
+        // Create bubbles every 2 seconds
+        setInterval(createBubble, 2000);
+    </script>
+</body>
+</html>
