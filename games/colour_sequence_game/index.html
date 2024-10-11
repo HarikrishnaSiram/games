@@ -12,6 +12,8 @@
             background: linear-gradient(135deg, #ffcccc, #cce5ff);
             position: relative;
             height: 100vh;
+            font-weight: bold; /* Make all text bold */
+            color: black; /* Set all text to dark black */
         }
 
         .shape {
@@ -28,57 +30,6 @@
             100% { transform: translateY(0) rotate(0); }
         }
 
-        .sphere { width: 50px; height: 50px; background: #ff6b6b; border-radius: 50%; box-shadow: 0 0 30px rgba(255, 107, 107, 0.7); }
-        .cone { width: 0; height: 0; border-left: 25px solid transparent; border-right: 25px solid transparent; border-bottom: 50px solid #ffcc00; position: relative; margin-top: -25px; box-shadow: 0 0 20px rgba(255, 204, 0, 0.5); }
-        .cylinder { width: 40px; height: 100px; background: #00c6ff; border-radius: 20px; box-shadow: 0 0 30px rgba(0, 198, 255, 0.7); }
-        .cube { width: 50px; height: 50px; background: #ffeb3b; position: relative; transform-style: preserve-3d; }
-        .cuboid { width: 50px; height: 100px; background: #3b3bff; }
-        .pyramid { width: 0; height: 0; border-left: 25px solid transparent; border-right: 25px solid transparent; border-bottom: 50px solid #ff5733; position: relative; margin-top: -25px; }
-
-        h1, #level, #highScore { color: #333; position: relative; z-index: 1; text-align: center; margin-top: 20px; }
-        .controls { position: relative; z-index: 1; text-align: center; margin-top: 20px; }
-        .color-button { width: 100px; height: 100px; border: none; border-radius: 50%; margin: 20px; cursor: pointer; position: relative; z-index: 1; transition: transform 0.2s, box-shadow 0.2s; }
-        #red { background: #ff3b3b; }
-        #green { background: #3bff3b; }
-        #blue { background: #3b3bff; }
-        #yellow { background: #ffeb3b; }
-        .color-button.highlight { transform: scale(1.2); box-shadow: 0 0 20px rgba(255, 255, 255, 0.8); }
-
-        #startGame, #resetGame, #showInstructions { width: 120px; height: 40px; border: none; border-radius: 5px; cursor: pointer; margin: 10px; font-size: 16px; font-weight: bold; color: white; position: relative; z-index: 1; }
-        #startGame { background: #ff0000; }
-        #resetGame { background: #0d00ff; }
-        #showInstructions { background: #29ff03; }
-
-        #message, #score { margin-top: 20px; font-size: 18px; color: #555; text-align: center; position: relative; z-index: 1; }
-
-        /* Instructions */
-        #instructions {
-            display: none;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 10px;
-            padding: 20px;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 2;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-        }
-
-        #closeInstructions {
-            margin-top: 10px;
-            padding: 5px 10px;
-            background-color: #28a745; /* Green color */
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        #closeInstructions:hover {
-            background-color: #218838; /* Darker green on hover */
-        }
-
         .bubble {
             position: absolute;
             border-radius: 50%;
@@ -91,9 +42,159 @@
             0% { transform: translateY(0); }
             100% { transform: translateY(-100vh); }
         }
+
+        .moving-text {
+            position: absolute;
+            font-size: 19.2px; /* Reduced by 20% from 24px */
+            color: black; /* Set moving text color to black */
+            white-space: nowrap;
+            z-index: 0; /* Behind other elements */
+            font-family: "Courier New", Courier, monospace; /* Different font for moving text */
+            animation: moveText 30s linear infinite; /* Slower movement */
+        }
+
+        @keyframes moveText {
+            0% { transform: translate(100vw, 100vh); }
+            25% { transform: translate(-100vw, -50vh); }
+            50% { transform: translate(50vw, 0); }
+            75% { transform: translate(-50vw, 50vh); }
+            100% { transform: translate(100vw, 100vh); }
+        }
+
+        h1, #level, #highScore {
+            color: black; 
+            position: relative; 
+            z-index: 1; 
+            text-align: center; 
+            margin-top: 20px; 
+        }
+        
+        .controls { 
+            position: relative; 
+            z-index: 1; 
+            text-align: center; 
+            margin-top: 20px; 
+        }
+        
+        .color-button { 
+            width: 100px; 
+            height: 100px; 
+            border: none; 
+            border-radius: 50%; 
+            margin: 20px; 
+            cursor: pointer; 
+            position: relative; 
+            z-index: 1; 
+            transition: transform 0.2s, box-shadow 0.2s; 
+            font-weight: bold; /* Make button text bold */
+            font-size: 16px; /* Button font size */
+            color: black; /* Button text color */
+        }
+
+        #red { background: #ff3b3b; }
+        #green { background: #3bff3b; }
+        #blue { background: #3b3bff; }
+        #yellow { background: #ffeb3b; }
+        
+        .color-button.highlight { 
+            transform: scale(1.2); 
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.8); 
+        }
+
+        #startGame, #resetGame, #showInstructions { 
+            width: 120px; 
+            height: 40px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            margin: 10px; 
+            font-size: 16px; 
+            color: black; /* Button text color */
+            position: relative; 
+            z-index: 1; 
+            font-weight: bold; /* Make button text bold */
+        }
+        
+        #startGame { background: #ff0000; }
+        #resetGame { background: #d105f1; }
+        #showInstructions { background: #29ff03; }
+
+        #message, #score { 
+            margin-top: 20px; 
+            font-size: 18px; 
+            color: black; /* Message and score text color */
+            text-align: center; 
+            position: relative; 
+            z-index: 1; 
+        }
+
+        #instructions {
+            display: none;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            color: black; /* Instructions text color */
+        }
+
+        #closeInstructions {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: #28a745; /* Green color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold; /* Make button text bold */
+        }
+
+        #closeInstructions:hover {
+            background-color: #218838; /* Darker green on hover */
+        }
+
+        /* Home button styles */
+        #homeButton {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #007bff; /* Blue color */
+            color: black; /* Set home button text color to black */
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            z-index: 1; /* Above other elements */
+            font-weight: bold; /* Make button text bold */
+            display: flex; /* Flex for icon and text */
+            align-items: center; /* Center icon and text vertically */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
+            transition: background-color 0.3s; /* Smooth transition */
+        }
+
+        #homeButton img {
+            width: 24px; /* Enhanced icon size */
+            height: 24px; /* Maintain aspect ratio */
+            margin-right: 8px; /* Spacing between icon and text */
+        }
+
+        #homeButton:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
     </style>
 </head>
 <body>
+    <button id="homeButton" onclick="window.location.href='YOUR_URL_HERE'">
+        <img src="https://img.icons8.com/material-outlined/24/000000/home.png" alt="Home Icon">
+        Home
+    </button>
+
+    <div class="moving-text" id="movingText">HARIKRISHNA GAME DEPLOYMENT</div>
+
     <h1>Colorful Sequence Memory Game</h1>
     <div id="level">Level: 0</div>
     <div id="highScore">High Score: 0</div>
@@ -121,7 +222,7 @@
         <p>3. Click the color buttons in the same order to replicate the sequence.</p>
         <p>4. If you make a mistake, the game will end.</p>
         <p>5. Try to reach the highest score by advancing through levels!</p>
-        <button id="closeInstructions">Close</button> <!-- Updated button -->
+        <button id="closeInstructions">Close</button>
     </div>
 
     <script>
@@ -138,10 +239,10 @@
             level = 0;
             score = 0;
             document.getElementById('message').textContent = '';
-            document.getElementById('score').textContent = 'Score: 0';
-            document.getElementById('level').textContent = 'Level: 0';
-            nextSequence();
+            document.getElementById('score').textContent = 'Score: ' + score;
+            document.getElementById('highScore').textContent = 'High Score: ' + highScore;
             document.getElementById('instructions').style.display = 'none'; // Hide instructions when starting the game
+            nextSequence();
         }
 
         function nextSequence() {
