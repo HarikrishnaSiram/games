@@ -1,0 +1,15 @@
+pipeline {
+    agent any
+    stages {
+        stage("Pulling Code from GitHub...") {
+            steps {
+                git "https://github.com/HarikrishnaSiram/games.git"
+            }
+        }
+        stage("Automating Change Commits...") {
+            steps {
+                sh "sh build.sh"
+            }
+        }
+    }
+}
