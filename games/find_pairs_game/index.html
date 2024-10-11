@@ -15,6 +15,9 @@
             background-size: 400% 400%;
             animation: gradient 10s ease infinite;
             font-family: 'Arial', sans-serif;
+            overflow: hidden; /* Prevent scroll bars */
+            position: relative;
+            font-weight: bold; /* Make all text bold */
         }
 
         @keyframes gradient {
@@ -23,11 +26,62 @@
             100% { background-position: 0% 50%; }
         }
 
+        .name-overlay {
+            position: absolute;
+            font-size: 1.4rem; /* 70% of original size */
+            color: rgba(255, 255, 255, 0.2); /* Faded for background */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            animation: moveText 30s linear infinite; /* Slower movement */
+            pointer-events: none; /* Allow clicks to pass through */
+        }
+
+        @keyframes moveText {
+            0% { top: 10%; left: 10%; }
+            10% { top: 20%; left: 30%; }
+            20% { top: 30%; left: 50%; }
+            30% { top: 40%; left: 20%; }
+            40% { top: 50%; left: 60%; }
+            50% { top: 60%; left: 40%; }
+            60% { top: 70%; left: 80%; }
+            70% { top: 80%; left: 10%; }
+            80% { top: 90%; left: 30%; }
+            90% { top: 80%; left: 70%; }
+            100% { top: 10%; left: 10%; }
+        }
+
+        .home-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #ed0bb8; /* Green background */
+            border: none;
+            color: black; /* Text color */
+            padding: 10px 15px; /* Padding for button */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer;
+            z-index: 10; /* Ensure it's above other elements */
+            font-size: 16px; /* Adjust size of text */
+            display: flex;
+            align-items: center; /* Center vertically */
+            transition: background-color 0.3s; /* Transition for hover effect */
+            font-weight: bold; /* Make button text bold */
+        }
+
+        .home-button span {
+            margin-left: 5px; /* Space between icon and text */
+        }
+
+        .home-button:hover {
+            background-color: #4dbee4; /* Darker green on hover */
+        }
+
         .board {
             display: grid;
             grid-template-columns: repeat(4, 100px);
             gap: 10px;
             margin: 20px 0; /* Added margin for spacing */
+            position: relative; /* For stacking context */
+            z-index: 1; /* Ensure game board is above overlay */
         }
 
         .card {
@@ -67,11 +121,12 @@
         #restartButton, #howToPlayButton {
             padding: 10px 20px;
             font-size: 16px;
-            color: white;
+            color: black;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.3s;
+            font-weight: bold; /* Make button text bold */
         }
 
         #restartButton {
@@ -169,6 +224,10 @@
     </style>
 </head>
 <body>
+    <button class="home-button" onclick="window.location.href='YOUR_NEW_PAGE_URL'">
+        🏠 <span>HOME</span>
+    </button>
+    <div class="name-overlay">HARIKRISHNA GAME DEPLOYMENT</div>
     <div class="status">Find the pairs!</div>
     <div class="timer">Time: <span id="timer">0</span> seconds</div>
     <div class="score">Score: <span id="score">0</span></div>
