@@ -36,7 +36,7 @@
             border-radius: 10px;
             position: relative;
             z-index: 1;
-            animation: slideIn 0.5s ease-out; /* Slide-in effect */
+            animation: slideIn 0.5s ease-out;
         }
 
         @keyframes slideIn {
@@ -47,7 +47,7 @@
         h1 {
             font-size: 3rem;
             margin-bottom: 20px;
-            animation: bounceIn 1s; /* Bounce effect */
+            animation: bounceIn 1s;
             color: #ffcc00;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
             font-family: 'Comic Sans MS', cursive, sans-serif;
@@ -80,7 +80,7 @@
             align-items: center;
             justify-content: center;
             color: white;
-            animation: bounce 1s infinite alternate; /* Bounce effect */
+            animation: bounce 1s infinite alternate;
         }
 
         @keyframes bounce {
@@ -97,21 +97,26 @@
             filter: brightness(1.2);
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+        .name-overlay {
+            position: absolute;
+            font-size: 1.8rem; /* Reduced to 60% of original size */
+            color: rgba(255, 255, 255, 0.8);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            animation: moveText 30s linear infinite; /* Slower movement */
         }
 
-        /* Confetti */
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: #ffcc00;
-            opacity: 0;
-            transition: opacity 0.5s;
-            border-radius: 50%;
+        @keyframes moveText {
+            0% { left: -50%; top: 20%; }
+            10% { left: 90%; top: 10%; }
+            20% { left: 50%; top: 40%; }
+            30% { left: 10%; top: 70%; }
+            40% { left: 80%; top: 50%; }
+            50% { left: 20%; top: 80%; }
+            60% { left: 60%; top: 30%; }
+            70% { left: 30%; top: 90%; }
+            80% { left: 0%; top: 60%; }
+            90% { left: 100%; top: 20%; }
+            100% { left: -50%; top: 50%; }
         }
 
         /* Media Queries for Responsiveness */
@@ -122,6 +127,7 @@
                 font-size: 1.5rem;
             }
             h1 { font-size: 2.5rem; }
+            .name-overlay { font-size: 1.5rem; } /* Adjust for smaller screens */
         }
     </style>
 </head>
@@ -131,6 +137,8 @@
     <div class="bg" id="bg3" style="background-image: url('https://t4.ftcdn.net/jpg/02/33/66/97/360_F_233669731_fS4mRkh7rY4gicZzCZ2PXjafLusphkeD.jpg');"></div>
     <div class="bg" id="bg4" style="background-image: url('https://static.vecteezy.com/system/resources/previews/012/724/149/large_2x/children-at-playground-scene-free-vector.jpg');"></div>
     <div class="bg" id="bg5" style="background-image: url('http://clipart-library.com/newhp/21-217145_schoolyard-playground-child-clip-art-school-playground-clip.png');"></div>
+
+    <div class="name-overlay">HARIKRISHNA GAME DEPLOYMENT</div>
 
     <div class="dashboard">
         <h1>Choose Your Game!</h1>
@@ -158,7 +166,6 @@
         setInterval(changeBackground, 3000);
 
         function selectGame(url) {
-            // Optional: Add a pulsating effect on selection
             const gameElements = document.querySelectorAll('.game');
             gameElements.forEach(game => {
                 game.style.animation = 'pulse 0.5s';
@@ -167,7 +174,6 @@
                 }, 500);
             });
 
-            // Confetti effect
             createConfetti();
             window.location.href = url;
         }
